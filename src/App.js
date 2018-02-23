@@ -27,24 +27,25 @@ class App extends Component {
       console.log('connecting...');
     });
     //subscribe to the currency you want data on(TEST w/ BTC)
-    socket.emit('SubAdd', { subs: ['2~Poloniex~BTC~USD','2~Poloniex~ETH~USD','2~Poloniex~XLM~USD']});
+    socket.emit('SubAdd', { subs: ['2~Poloniex~BTC~USD','2~Poloniex~ETH~USD',
+            '2~Poloniex~XLM~USD']});
     this.socketData = socket.on('m', (message) => {
       const dataBuffer = message.split("~");
       //dataBuffer[5] is the price of BTC/ETH/XLM in USD
       //dataBuffer[2] is the coin identity
-      if(dataBuffer[2] === 'BTC') {
-        console.log('btc');
-        let price = dataBuffer[5];
-        this.updateBtcPrice(price);
-      } else if(dataBuffer[2] === 'ETH') {
-        this.updateEthPrice(dataBuffer[5]);
-        console.log('eth');
-      } else if(dataBuffer[2] === 'XLM') {
-        this.updateXlmPrice(dataBuffer[5]);
+      let priceUsd = dataBuffer[5];
+      let currency = dataBuffer[2];
+
+      if(currency === 'BTC') {
+        this.updateBtcPrice(priceUsd);
+      } else if(currency === 'ETH') {
+          this.updateEthPrice(priceUsd);
+      } else if(currency === 'XLM') {
+          this.updateXlmPrice(priceUsd);
       } else {
         console.log('something is broken');
       }
-      console.log(dataBuffer);
+      //console.log(dataBuffer); to check data in socket
     });
 
   }
@@ -75,7 +76,6 @@ class App extends Component {
   }
   updateBtcPrice(price) {
     this.setState({btc_usd_price: price});
-    console.log(`btc state: ${this.state.btc_usd_price}`);
   }
 
   updateEthPrice(price) {
